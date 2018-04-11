@@ -5,7 +5,7 @@ from pddlsim.executors.executor import Executor
 class PlanDispatcher(Executor):
 	"""docstring for PlanDispatcher."""
 	def __init__(self):
-		super(self).__init__()
+		super(PlanDispatcher, self).__init__()
 		self.steps = []
 
 	def initialize(self,services):
@@ -20,6 +20,6 @@ class PlanDispatcher(Executor):
 from pddlsim.local_simulator import LocalSimulator
 from pddlsim.executors.plan_dispatch import PlanDispatcher
 
-domain_path = "attack_domain.pddl"
-problem_path = "attack_problem2.pddl"
+domain_path = "domain.pddl"
+problem_path = "problem.pddl"
 print LocalSimulator().run(domain_path, problem_path, PlanDispatcher())

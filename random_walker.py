@@ -23,6 +23,6 @@ class RandomExecutor(object):
 		return chosen
 
 from pddlsim.local_simulator import LocalSimulator
-domain_path = "domain.pddl"
-problem_path = "problem.pddl"
+domain_path = "attack_domain.pddl"
+problem_path = "attack_problem1.pddl"
 print LocalSimulator().run(domain_path, problem_path, RandomExecutor())
