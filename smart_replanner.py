@@ -1,25 +1,36 @@
 #from executor import Executor
+import sys
 import pddlsim.planner as planner
 from pddlsim.executors.executor import Executor
 
-class PlanDispatcher(Executor):
-	"""docstring for PlanDispatcher."""
+class SmartReplanner(Executor):
+	"""docstring for SmartReplanner."""
 	def __init__(self):
-		super(PlanDispatcher, self).__init__()
+		super(SmartReplanner, self).__init__()
 		self.steps = []
+		self.plan = []
 
-	def initialize(self,services):
-		self.steps = planner.make_plan(services.pddl.domain_path, services.pddl.problem_path)
+	def initialize(self, services):
+		self.services = services
 
 	def next_action(self):
-		if len(self.steps)>0:
-			return self.steps.pop(0).lower()
+		if self.services.goal_tracking.reached_all_goals():
+			return None
+			
+		self.steps = self.services.valid_actions.get()
+		if len(self.steps) == 0: return None
+		if len(self.steps) == 1: return self.steps[0]
+		
+		if self.plan == []:
+			problem_path = self.services.problem_generator.generate_problem(self.services.goal_tracking.uncompleted_goals[0], self.services.perception.get_state())
+			self.plan = self.services.planner(self.services.pddl.domain_path, problem_path)
+		if len(self.plan) > 0: 
+			return self.plan.pop(0)
 		return None
 
 
 from pddlsim.local_simulator import LocalSimulator
-from pddlsim.executors.plan_dispatch import PlanDispatcher
 
-domain_path = "domain.pddl"
-problem_path = "problem.pddl"
-print LocalSimulator().run(domain_path, problem_path, PlanDispatcher())
+domain_path = sys.argv[1]
+problem_path = sys.argv[2]
+print LocalSimulator().run(domain_path, problem_path, SmartReplanner())
